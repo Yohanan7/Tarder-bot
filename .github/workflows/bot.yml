@@ -1,0 +1,35 @@
+name: Bot Scalper MT5
+
+on:
+  schedule:
+    # S'exécute automatiquement toutes les 4 heures (du lundi au vendredi)
+    - cron: '0 */4 * * 1-5'
+  workflow_dispatch: # Permet de lancer le bot manuellement via un bouton
+
+jobs:
+  run-bot:
+    runs-on: windows-latest
+
+    steps:
+    - name: Récupérer le code
+      uses: actions/checkout@v4
+
+    - name: Configurer Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Installer les dépendances
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install MetaTrader5
+
+    - name: Exécuter le bot
+      env:
+        MT5_LOGIN: ${{ secrets.MT5_LOGIN }}
+        MT5_PASSWORD: ${{ secrets.MT5_PASSWORD }}
+        MT5_SERVER: ${{ secrets.MT5_SERVER }}
+      run: |
+        python main.py
+
